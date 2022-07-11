@@ -1,15 +1,12 @@
 package com.luv2code.hibernate.demo;
 
-import java.text.ParseException;
-import java.util.Date;
-
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 import com.luv2code.hibernate.demo.entity.Student;
 
-public class CreateStudentDemo {
+public class ReadStudentDemo {
 
 	public static void main(String[] args) {
 		
@@ -22,30 +19,39 @@ public class CreateStudentDemo {
 		//create session
 		Session session = factory.getCurrentSession();
 		
-		try {			
+		try {
 			// create student object
 			System.out.println("Create new student object");
-			
-			String theDateOfBirthStr = "31/12/1998";
-			
-			Date theDateOfBirth = DateUtils.parseDate(theDateOfBirthStr);
-			
-			Student tempStudent = new Student("Paul","Wall","paul@commscope.com", theDateOfBirth);
+			Student tempStudent = new Student("Daffy","Duck","daffy@commscope.com",null);
 			
 			// start a transaction
 			session.beginTransaction();
 			
 			// save the student object
 			System.out.println("Saving the student...");
+			System.out.println(tempStudent);
 			session.save(tempStudent);
 			
 			//commit transaction
 			session.getTransaction().commit();
+			
+			// find out the student's id: primary key
+			System.out.println("Saved student. Generated id: " + tempStudent.getId());
+			
+			// now get a new session and start transaction
+			session = factory.getCurrentSession();
+			session.beginTransaction();
+			
+			// retrieve student based on the id:
+			System.out.println("\nGetting student with id: " + tempStudent.getId());
+			Student myStudent = session.get(Student.class, tempStudent.getId());
+			System.out.println("Get complete: " + myStudent);
+			
+			// commit the transaction
+			session.getTransaction().commit();
+			
 			System.out.println("Done!");
 			
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} finally {
 			factory.close();
 		}
